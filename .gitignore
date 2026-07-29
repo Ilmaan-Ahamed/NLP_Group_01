@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Models & checkpoints (large binary artifacts)
+models/*.pkl
+models/*.keras
+models/*.h5
+models/bert_finetune_checkpoints/
+models/ilmaan_bert_finetuned/
+
+# Data (avoid committing large/raw datasets)
+data/*.csv
+!data/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/
+
+# Logs
+*.log
