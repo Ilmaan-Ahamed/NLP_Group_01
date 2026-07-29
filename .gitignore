@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Large / regeneratable model artifacts only
+# (small trained models like the .pkl/.keras files under models/ ARE tracked —
+#  they're KBs-to-low-MBs and are part of the graded deliverable)
+models/bert_finetune_checkpoints/
+models/ilmaan_bert_finetuned/
+
+# HuggingFace / torch cache (downloaded automatically, don't version)
+.cache/
+**/huggingface/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit local config
+.streamlit/
+
+# Logs
+*.log
