@@ -10,22 +10,21 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 
-# Models & checkpoints (large binary artifacts)
-models/*.pkl
-models/*.keras
-models/*.h5
+# Large / regeneratable model artifacts only
+# (small trained models like the .pkl/.keras files under models/ ARE tracked —
+#  they're KBs-to-low-MBs and are part of the graded deliverable)
 models/bert_finetune_checkpoints/
 models/ilmaan_bert_finetuned/
 
-# Data (avoid committing large/raw datasets)
-data/*.csv
-!data/.gitkeep
+# HuggingFace / torch cache (downloaded automatically, don't version)
+.cache/
+**/huggingface/
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Streamlit
+# Streamlit local config
 .streamlit/
 
 # Logs
