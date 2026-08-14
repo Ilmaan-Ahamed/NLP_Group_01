@@ -23,7 +23,7 @@ from scipy.sparse import hstack, csr_matrix
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.data_utils import verbalize_row
-from src.text_cleaning import preprocess_for_bow_lstm, preprocess_for_tfidf_cnn
+from src.text_cleaning import preprocess_for_bow_lstm, preprocess_for_tfidf_rnn
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
 CONFIDENCE_THRESHOLD = 0.70
@@ -74,7 +74,7 @@ def predict_logistic_regression(row_dict, lr, vec, scaler):
 
 def predict_random_forest(row_dict, rf, vec, scaler):
     text = verbalize_row(row_dict)
-    cleaned = preprocess_for_tfidf_cnn(text)
+    cleaned = preprocess_for_tfidf_rnn(text)
     X_text = vec.transform([cleaned])
     X_num = scaler.transform([[
         row_dict["profile pic"], row_dict["nums/length username"],
@@ -147,7 +147,7 @@ def main():
         else:
             rf, vec, scaler = load_afrith_model()
             if rf is None:
-                st.error("Model files not found. Run `python -m src.member2_afrith_rf_cnn` first.")
+                st.error("Model files not found. Run `python -m src.member2_afrith_rf_rnn` first.")
                 return
             proba, verbalized_text = predict_random_forest(row_dict, rf, vec, scaler)
 

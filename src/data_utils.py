@@ -31,7 +31,7 @@ feature extraction on "biography text", and no raw bio string is available,
 this module VERBALIZES each row's structured profile signals into a short
 natural-language profile description (a standard technique sometimes called
 "data-to-text" or "feature verbalization"). This gives every downstream NLP
-model (BoW, TF-IDF, LSTM, CNN, BERT) genuine text to tokenize, vectorize, or
+model (BoW, TF-IDF, LSTM, RNN, BERT) genuine text to tokenize, vectorize, or
 embed, while being fully transparent that the text is derived from
 structured fields rather than a scraped bio string.
 
@@ -109,7 +109,7 @@ def verbalize_row(row: pd.Series) -> str:
     """
     Convert one row of structured Instagram profile features into a short
     natural-language "profile description" so text-based NLP models
-    (BoW / TF-IDF / LSTM / CNN / BERT) have real text to process.
+    (BoW / TF-IDF / LSTM / RNN / BERT) have real text to process.
     """
     parts = []
 
