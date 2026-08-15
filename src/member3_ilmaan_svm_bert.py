@@ -87,7 +87,9 @@ def train_svm(X_train, y_train, X_val, y_val):
 def finetune_bert_classifier(train_texts, y_train, val_texts, y_val, epochs=3, batch_size=16, max_len=64):
     """
     Fine-tune bert-base-uncased end-to-end for binary classification using
-    HuggingFace's Trainer API.
+    HuggingFace's Trainer API. Reports Accuracy, Precision, Recall, F1-Score,
+    and ROC-AUC so results are directly comparable with every other model
+    in the project.
     """
     import torch
     from torch.utils.data import Dataset
@@ -132,9 +134,17 @@ def finetune_bert_classifier(train_texts, y_train, val_texts, y_val, epochs=3, b
     def compute_metrics(eval_pred):
         logits, labels = eval_pred
         preds = np.argmax(logits, axis=1)
+
+        # Convert raw logits to probabilities for the positive class --
+        # ROC-AUC needs a ranking/probability score, not hard 0/1 predictions.
+        probs = torch.nn.functional.softmax(torch.tensor(logits), dim=1)[:, 1].numpy()
+
         return {
             "accuracy": accuracy_score(labels, preds),
+            "precision": precision_score(labels, preds, zero_division=0),
+            "recall": recall_score(labels, preds, zero_division=0),
             "f1": f1_score(labels, preds, zero_division=0),
+            "roc_auc": roc_auc_score(labels, probs),
         }
 
     trainer = Trainer(
@@ -148,7 +158,11 @@ def finetune_bert_classifier(train_texts, y_train, val_texts, y_val, epochs=3, b
     trainer.train()
     metrics = trainer.evaluate()
     print("\n===== Fine-tuned BERT Evaluation =====")
-    print(metrics)
+    print(f"Accuracy : {metrics['eval_accuracy']:.4f}")
+    print(f"Precision: {metrics['eval_precision']:.4f}")
+    print(f"Recall   : {metrics['eval_recall']:.4f}")
+    print(f"F1-Score : {metrics['eval_f1']:.4f}")
+    print(f"ROC-AUC  : {metrics['eval_roc_auc']:.4f}")
 
     save_dir = os.path.join(MODELS_DIR, "ilmaan_bert_finetuned")
     model.save_pretrained(save_dir)
