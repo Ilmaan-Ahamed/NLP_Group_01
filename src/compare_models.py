@@ -24,7 +24,7 @@ from sklearn.metrics import (
 
 from src.data_utils import load_split
 from src.text_cleaning import (
-    preprocess_for_bow_lstm, preprocess_for_tfidf_cnn, preprocess_for_bert,
+    preprocess_for_bow_lstm, preprocess_for_tfidf_rnn, preprocess_for_bert,
 )
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
@@ -71,7 +71,7 @@ def main():
     tfidf_vec = try_load(os.path.join(MODELS_DIR, "afrith_tfidf_vectorizer.pkl"))
     afrith_scaler = try_load(os.path.join(MODELS_DIR, "afrith_scaler.pkl"))
     if rf and tfidf_vec and afrith_scaler is not None:
-        cleaned = text_series.apply(preprocess_for_tfidf_cnn)
+        cleaned = text_series.apply(preprocess_for_tfidf_rnn)
         X_text = tfidf_vec.transform(cleaned)
         X_num = afrith_scaler.transform(numeric_df)
         X = hstack([X_text, csr_matrix(X_num)]).tocsr()
@@ -99,7 +99,7 @@ def main():
         except OSError as e:
             print(f"Could not download bert-base-uncased -- skipping SVM/BERT evaluation ({e}).")
 
-    # ---- DL models (LSTM / CNN) ----
+    # ---- DL models (LSTM / RNN) ----
     try:
         from tensorflow.keras.models import load_model
         from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -117,20 +117,20 @@ def main():
             results.append({"Member": "Himas", "Model": "LSTM", "Type": "DL",
                              **score(y, y_pred, y_proba)})
 
-        cnn_path = os.path.join(MODELS_DIR, "afrith_cnn_model.keras")
-        cnn_tok_path = os.path.join(MODELS_DIR, "afrith_cnn_tokenizer.pkl")
-        if os.path.exists(cnn_path) and os.path.exists(cnn_tok_path):
-            model = load_model(cnn_path)
-            tok = joblib.load(cnn_tok_path)
-            cleaned = text_series.apply(preprocess_for_tfidf_cnn)
+        rnn_path = os.path.join(MODELS_DIR, "afrith_rnn_model.keras")
+        rnn_tok_path = os.path.join(MODELS_DIR, "afrith_rnn_tokenizer.pkl")
+        if os.path.exists(rnn_path) and os.path.exists(rnn_tok_path):
+            model = load_model(rnn_path)
+            tok = joblib.load(rnn_tok_path)
+            cleaned = text_series.apply(preprocess_for_tfidf_rnn)
             seq = tok.texts_to_sequences(cleaned)
             pad = pad_sequences(seq, maxlen=30, padding="post", truncating="post")
             y_proba = model.predict(pad).ravel()
             y_pred = (y_proba >= 0.5).astype(int)
-            results.append({"Member": "Afrith", "Model": "CNN", "Type": "DL",
+            results.append({"Member": "Afrith", "Model": "RNN", "Type": "DL",
                              **score(y, y_pred, y_proba)})
     except ImportError:
-        print("tensorflow not available -- skipping LSTM/CNN evaluation.")
+        print("tensorflow not available -- skipping LSTM/RNN evaluation.")
 
     if not results:
         print("No trained models found in /models. Run each member's training "

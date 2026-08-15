@@ -98,7 +98,7 @@ def preprocess_for_bow_lstm(text: str) -> str:
     return " ".join(tokens)
 
 
-def preprocess_for_tfidf_cnn(text: str) -> str:
+def preprocess_for_tfidf_rnn(text: str) -> str:
     """Member 2 (Afrith) pipeline: clean -> lowercase -> tokenize -> stopword removal -> stem."""
     cleaned = clean_text(text)
     tokens = tokenize(cleaned)
@@ -131,5 +131,5 @@ if __name__ == "__main__":
         sample = "Official page!! DM for deals 🔥 https://t.co/xyz #promo @user123"
         print("Original:", sample)
         print("BoW/LSTM:", preprocess_for_bow_lstm(sample))
-        print("TF-IDF/CNN:", preprocess_for_tfidf_cnn(sample))
+        print("TF-IDF/RNN:", preprocess_for_tfidf_rnn(sample))
         print("BERT:", preprocess_for_bert(sample))
