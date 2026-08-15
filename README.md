@@ -112,7 +112,7 @@ python -m src.text_cleaning --download
 ```
 
 **Dependencies** (see `requirements.txt`): pandas, numpy, scikit-learn,
-scipy, nltk, joblib, tensorflow (LSTM/CNN), torch + transformers (BERT),
+scipy, nltk, joblib, tensorflow (LSTM/RNN), torch + transformers (BERT),
 streamlit (web app), and optionally matplotlib/seaborn/jupyter for
 notebooks.
 
@@ -126,7 +126,7 @@ python -m src.make_train_test_split
 
 # Train each member's models (already-trained models are included in models/)
 python -m src.member1_himas_lr_lstm          # Himas: Logistic Regression + LSTM
-python -m src.member2_afrith_rf_cnn          # Afrith: Random Forest + CNN
+python -m src.member2_afrith_rf_rnn          # Afrith: Random Forest + RNN
 python -m src.member3_ilmaan_svm_bert        # Ilmaan: SVM + fine-tuned BERT
 python -m src.member3_ilmaan_svm_bert --skip-finetune   # SVM only, faster
 
@@ -150,7 +150,7 @@ shown as **Uncertain**.
 | Member | Git Branch | Feature Extraction | ML Model | DL Model |
 |---|---|---|---|---|
 | Himas | `HimasNLP` | Bag-of-Words (BoW) | Logistic Regression | LSTM |
-| Afrith | `AfrithNLP` | TF-IDF | Random Forest | CNN |
+| Afrith | `AfrithNLP` | TF-IDF | Random Forest | RNN |
 | Ilmaan | `IlmaanNLP` | BERT embeddings | SVM | Fine-tuned BERT (`bert-base-uncased`) |
 
 **Shared preprocessing steps:** cleaning (remove URLs/emojis/punctuation),
@@ -172,7 +172,7 @@ Results from evaluating each trained model on the held-out test set
 |---|---|---|---|---|---|
 | Afrith | Random Forest | ML | 0.987 | 0.987 | 0.999 |
 | Himas | Logistic Regression | ML | 0.967 | 0.967 | 0.995 |
-| Afrith | CNN | DL | 0.936 | 0.934 | 0.984 |
+| Afrith | RNN | DL | 0.936 | 0.934 | 0.984 |
 | Himas | LSTM | DL | 0.917 | 0.912 | 0.981 |
 | Ilmaan | SVM (BERT embeddings) | ML | *pending full run* | – | – |
 | Ilmaan | Fine-tuned BERT | DL | *pending full run* | – | – |
