@@ -1,14 +1,12 @@
 # Fake Social Media Account Detection (Instagram)
 
-**CCS3356 Natural Language Processing — Group Assignment**
+**CCS3356 Natural Language Processing — Final Submission**
 
 ---
 
 ## Project Title
 
-**Fake Social Media Account Detection (Instagram)** — an NLP and machine
-learning system that classifies Instagram profiles as **Real** or **Fake**
-using profile-level features and text-based modeling techniques.
+**Fake Social Media Account Detection (Instagram)** — an NLP and machine learning system that classifies Instagram profiles as **Real** or **Fake** using profile-level features and text-based modeling techniques.
 
 ---
 
@@ -28,23 +26,11 @@ using profile-level features and text-based modeling techniques.
 
 ## Problem Statement
 
-Fake and bot Instagram accounts are widely used to spread misinformation,
-conduct scams, manipulate engagement metrics, and harass genuine users.
-Manually reviewing accounts at scale is impractical. This project builds
-an automated NLP-based classification system that analyzes profile-level
-signals — biography content/length, username patterns, follower and
-following counts, post history, and account privacy — to determine whether
-an Instagram account is **genuine** or **fraudulent**.
+Fake and bot Instagram accounts are widely used to spread misinformation, conduct scams, manipulate engagement metrics, and harass genuine users. Manually reviewing accounts at scale is impractical. This project builds an automated NLP-based classification system that analyzes profile-level signals — biography content/length, username patterns, follower and following counts, post history, and account privacy — to determine whether an Instagram account is **genuine** or **fraudulent**.
 
-Each group member independently develops a different ML and DL model on
-the same dataset; the best-performing model is integrated into a
-Streamlit web application that outputs a **Real / Fake** prediction with a
-confidence score.
+Each group member independently developed a different ML and DL model on the same dataset. The best-performing model (Random Forest) is integrated into a Streamlit web application that outputs a **Real / Fake** prediction with a confidence score.
 
-**Intended users:** platform administrators, cybersecurity analysts,
-digital marketers verifying audience authenticity, disinformation
-researchers, and general users wanting to verify accounts they interact
-with.
+**Intended users:** platform administrators, cybersecurity analysts, digital marketers verifying audience authenticity, disinformation researchers, and general users wanting to verify accounts they interact with.
 
 ---
 
@@ -72,28 +58,15 @@ https://www.kaggle.com/datasets/free4ever1/instagram-fake-spammer-genuine-accoun
 | `followers_following_ratio` | engineered ratio feature |
 | `fake` | target label (0 = real, 1 = fake) |
 
-**Note on biography text:** the dataset is fully structured/numeric and
-does not include a raw bio string. To meet the project's NLP
-feature-extraction requirement (BoW / TF-IDF / BERT), `src/data_utils.py`
-verbalizes each row's structured signals into a short natural-language
-profile description (e.g. *"no profile picture, empty biography, 12
-followers, following 980 accounts, suspicious ratio"*). All three NLP
-pipelines run on this verbalized text. If a version of the dataset with a
-real `bio` column becomes available, the code will use it automatically
-instead.
+**Note on biography text:** the dataset is fully structured/numeric and does not include a raw bio string. To meet the project's NLP feature-extraction requirement (BoW / TF-IDF / BERT), `src/data_utils.py` verbalizes each row's structured signals into a short natural-language profile description (e.g. *"no profile picture, empty biography, 12 followers, following 980 accounts, suspicious ratio"*). All three NLP pipelines run on this verbalized text.
 
-**Known limitations/biases:** privacy considerations around real public
-profiles; possible regional/demographic underrepresentation; Instagram-
-specific patterns that may not generalize to other platforms; short,
-noisy bio text limiting feature richness.
+**Known limitations/biases:** privacy considerations around real public profiles; possible regional/demographic underrepresentation; Instagram-specific patterns that may not generalize to other platforms; short, templated verbalized text limiting vocabulary diversity for sequence models. See the Final Report, Section 7, for the full ethics discussion.
 
 ---
 
 ## Setup Instructions
 
-**Prerequisites:** Python 3.9–3.12, and internet access the first time you
-run Member 3's BERT pipeline (downloads `bert-base-uncased`, then caches
-it locally).
+**Prerequisites:** Python 3.9–3.12, and internet access the first time you run Member 3's BERT pipeline (downloads `bert-base-uncased`, then caches it locally).
 
 ```bash
 # 1. Move into the project folder (the one containing requirements.txt and src/)
@@ -111,10 +84,7 @@ pip install -r requirements.txt
 python -m src.text_cleaning --download
 ```
 
-**Dependencies** (see `requirements.txt`): pandas, numpy, scikit-learn,
-scipy, nltk, joblib, tensorflow (LSTM/RNN), torch + transformers (BERT),
-streamlit (web app), and optionally matplotlib/seaborn/jupyter for
-notebooks.
+**Dependencies** (see `requirements.txt`): pandas, numpy, scikit-learn, scipy, nltk, joblib, tensorflow (LSTM/RNN), torch + transformers (BERT), streamlit (web app), and optionally matplotlib/seaborn/jupyter for notebooks.
 
 ---
 
@@ -128,7 +98,6 @@ python -m src.make_train_test_split
 python -m src.member1_himas_lr_lstm          # Himas: Logistic Regression + LSTM
 python -m src.member2_afrith_rf_rnn          # Afrith: Random Forest + RNN
 python -m src.member3_ilmaan_svm_bert        # Ilmaan: SVM + fine-tuned BERT
-python -m src.member3_ilmaan_svm_bert --skip-finetune   # SVM only, faster
 
 # Compare all trained models (Accuracy, Precision, Recall, F1, ROC-AUC)
 python -m src.compare_models
@@ -137,11 +106,7 @@ python -m src.compare_models
 streamlit run src/app.py
 ```
 
-The app opens at `http://localhost:8501`. Enter a profile's details
-(profile picture, bio length, followers, following, posts, private
-status, etc.), choose a model, and click **Predict** to get a **Real /
-Fake** label with a confidence score. Predictions below 70% confidence are
-shown as **Uncertain**.
+The app opens at `http://localhost:8501`. Enter a profile's details (profile picture, bio length, followers, following, posts, private status, etc.), choose a model, and click **Predict** to get a **Real / Fake** label with a confidence score. Predictions below 70% confidence are shown as **Uncertain**.
 
 ---
 
@@ -150,41 +115,35 @@ shown as **Uncertain**.
 | Member | Git Branch | Feature Extraction | ML Model | DL Model |
 |---|---|---|---|---|
 | Himas | `HimasNLP` | Bag-of-Words (BoW) | Logistic Regression | LSTM |
-| Afrith | `AfrithNLP` | TF-IDF | Random Forest | RNN |
+| Afrith | `AfrithNLP` | TF-IDF | Random Forest | RNN (SimpleRNN) |
 | Ilmaan | `IlmaanNLP` | BERT embeddings | SVM | Fine-tuned BERT (`bert-base-uncased`) |
 
-**Shared preprocessing steps:** cleaning (remove URLs/emojis/punctuation),
-tokenization, stop-word removal, lemmatization or stemming (member-
-specific), then vectorization/embedding.
+**Shared preprocessing steps:** cleaning (remove URLs/emojis/punctuation), tokenization, stop-word removal, lemmatization or stemming (member-specific), then vectorization/embedding.
 
-**Evaluation metrics used:** Accuracy, Precision, Recall, F1-Score,
-Confusion Matrix, ROC-AUC — chosen together so no single metric hides a
-model biased toward one class.
+**Evaluation metrics used:** Accuracy, Precision, Recall, F1-Score, Confusion Matrix, ROC-AUC — chosen together so no single metric hides a model biased toward one class.
+
+**Note:** Afrith's deep learning model was changed from a CNN to a SimpleRNN partway through the project per lecturer guidance; all results below reflect the final RNN version.
 
 ---
 
 ## Results Summary
 
-Results from evaluating each trained model on the held-out test set
-(`python -m src.compare_models`):
+Results from evaluating each trained model on the held-out test set:
 
-| Member | Model | Type | Accuracy | F1-Score | ROC-AUC |
-|---|---|---|---|---|---|
-| Afrith | Random Forest | ML | 0.987 | 0.987 | 0.999 |
-| Himas | Logistic Regression | ML | 0.967 | 0.967 | 0.995 |
-| Afrith | RNN | DL | 0.936 | 0.934 | 0.984 |
-| Himas | LSTM | DL | 0.917 | 0.912 | 0.981 |
-| Ilmaan | SVM (BERT embeddings) | ML | *pending full run* | – | – |
-| Ilmaan | Fine-tuned BERT | DL | *pending full run* | – | – |
+| Member | Model | Type | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
+|---|---|---|---|---|---|---|---|
+| Afrith | Random Forest | ML | 0.987 | 0.986 | 0.984 | 0.987 | 0.999 |
+| Ilmaan | SVM (BERT embeddings) | ML | 0.958 | 0.989 | 0.927 | 0.957 | 0.991 |
+| Himas | Logistic Regression | ML | 0.967 | 0.977 | 0.955 | 0.967 | 0.995 |
+| Ilmaan | Fine-tuned BERT | DL | 0.954 | 0.928 | 0.946 | 0.952 | 0.993 |
+| Afrith | RNN | DL | 0.941 | 0.958 | 0.923 | 0.940 | 0.986 |
+| Himas | LSTM | DL | 0.917 | 0.934 | 0.946 | 0.912 | 0.981 |
 
-**Current best model:** Random Forest (Afrith) — 98.7% accuracy, 99.9%
-ROC-AUC. Its feature importances confirm that follower count, profile
-picture presence, and post count are the strongest indicators of a fake
-account.
+**Best overall model:** Random Forest (Afrith) — 98.7% accuracy, 99.9% ROC-AUC. Its feature importances confirm that follower count, profile picture presence, and post count are the strongest indicators of a fake account, and it is the model wired into the Streamlit application by default.
 
-**Next steps:** complete Member 3's BERT fine-tuning run, re-run
-`compare_models.py` with all five models, and integrate the single
-best-performing model into the final version of the Streamlit app.
+**Notable finding:** Ilmaan's SVM on BERT embeddings achieves the highest precision in the project (0.989), making it the most conservative model about labeling an account fake — valuable in contexts where false accusations carry real cost.
+
+For full hyperparameters, training details, evaluation graphs, ethics discussion, and Git contribution evidence, see `Final_Report.pdf` and `Git_History_Evidence.pdf` in the final submission package.
 
 ---
 
@@ -195,11 +154,28 @@ project-root/
 ├── data/                # train.csv, test.csv, raw CSVs
 ├── notebooks/           # exploratory data analysis notebook
 ├── src/                 # all pipeline & app code
+│   ├── data_utils.py            # data loading + text verbalization
+│   ├── text_cleaning.py         # shared NLP cleaning utilities
+│   ├── member1_himas_lr_lstm.py # BoW -> Logistic Regression + LSTM
+│   ├── member2_afrith_rf_rnn.py # TF-IDF -> Random Forest + RNN
+│   ├── member3_ilmaan_svm_bert.py # BERT embeddings -> SVM + fine-tuned BERT
+│   ├── compare_models.py        # model comparison across all 6 models
+│   ├── make_train_test_split.py # reproducible train/test split
+│   └── app.py                   # Streamlit web application
 ├── models/               # saved .pkl / .keras trained models
-├── reports/              # generated evaluation reports (model_comparison.csv)
-├── screenshots/          # repo & app screenshots for submission
-├── videos/               # demo/progress video for submission
+├── reports/               # generated evaluation reports (model_comparison.csv)
+├── screenshots/           # repo & app screenshots for submission
+├── videos/                # progress/demo video for submission
 ├── requirements.txt
 ├── README.md
 └── .gitignore
 ```
+## 👥 Team
+
+| Name | GitHub |
+|------|--------|
+| Ilmaan Ahamed | [Ilmaan-Ahamed](https://github.com/Ilmaan-Ahamed) |
+| Mohamed Afrith| [MhoAfrith](https://github.com/MhoAfrith)         |
+| Mohamed Himas | [himasRm](https://github.com/himasRm)          
+---
+
